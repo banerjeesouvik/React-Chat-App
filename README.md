@@ -1,5 +1,5 @@
 # React Chat App
-This is a simple web application for chat. This web-app has been built using ReactJS and Socket.io
+This is a simple web application for chat. This web-app has been built using ReactJS, NodeJS and Socket.io
 
 ## Features
   - As of now it supports simple emit and broadcast only
@@ -9,6 +9,10 @@ This is a simple web application for chat. This web-app has been built using Rea
 Install all the dependencies
 ```sh
 $ npm install
+```
+Start the web-socket server
+```sh
+$ node server
 ```
 Run the web-app
 ```sh
