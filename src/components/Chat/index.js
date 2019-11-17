@@ -1,6 +1,8 @@
 import React, { Component } from "react";
-import socket from "./socketConnection";
+// import socket from "./socketConnection";
 import "./style.css";
+
+import Host from '../../config'
 
 class Chat extends Component {
   constructor(props) {
@@ -12,47 +14,60 @@ class Chat extends Component {
       isTyping: false,
       timeout: undefined
     };
+
+    this.socket = new WebSocket('ws://172.16.8.78:8888')
   }
   timeoutFunction = () => {
     this.setState({ isTyping: false });
-    socket.emit("notTyping");
+    this.socket.emit("notTyping");
   };
-  sendMessage = message => {
-    socket.emit("newMessage", {
-      sender: this.state.user,
-      message: message
-    });
-  };
-  userTyping = event => {
-    if (event.which === 13 && event.target.value) {
-      this.sendMessage(event.target.value)
-      document.getElementById("message-field").value = ''
-    } else {
-      if (!this.state.isTyping) {
-        this.setState({
-          isTyping: true,
-          timeout: setTimeout(this.timeoutFunction, 3000)
-        });
-        socket.emit("typing", this.state.user);
-      } else {
-        clearTimeout(this.state.timeout);
-        this.setState({ timeout: setTimeout(this.timeoutFunction, 3000) });
+  // sendMessage = message => {
+  //   socket.emit("newMessage", {
+  //     sender: this.state.user,
+  //     message: message
+  //   });
+  // };
+  // userTyping = event => {
+  //   if (event.which === 13 && event.target.value) {
+  //     this.sendMessage(event.target.value)
+  //     document.getElementById("message-field").value = ''
+  //   } else {
+  //     if (!this.state.isTyping) {
+  //       this.setState({
+  //         isTyping: true,
+  //         timeout: setTimeout(this.timeoutFunction, 3000)
+  //       });
+  //       socket.emit("typing", this.state.user);
+  //     } else {
+  //       clearTimeout(this.state.timeout);
+  //       this.setState({ timeout: setTimeout(this.timeoutFunction, 3000) });
+  //     }
+  //   }
+  // };
+  // someoneTyping = (sender) => {
+  //   this.setState({sender})
+  // }
+
+  connectToServer = () => {
+    fetch(`${Host}/ws`, {method: 'POST', data: JSON.stringify({id: '2'})}).then(resp => {
+      console.log(resp, 'resp')
+      this.socket.onopen = () => {
+        console.log('socket connected')
       }
-    }
-  };
-  someoneTyping = (sender) => {
-    this.setState({sender})
+    }).catch(error => console.log('error', error))
   }
+
   componentDidMount() {
-    socket.on("typing", data => {
-      this.someoneTyping(data)
-    });
-    socket.on("notTyping", () => {
-      this.setState({sender: ""})
-    });
-    socket.on("newMessage", (message) => {
-      this.setState({sender: "", messages: [...this.state.messages, message]})
-    })
+    this.connectToServer()
+    // socket.on("typing", data => {
+    //   this.someoneTyping(data)
+    // });
+    // socket.on("notTyping", () => {
+    //   this.setState({sender: ""})
+    // });
+    // socket.on("newMessage", (message) => {
+    //   this.setState({sender: "", messages: [...this.state.messages, message]})
+    // })
   }
 
   render() {

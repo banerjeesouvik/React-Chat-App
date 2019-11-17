@@ -1,5 +1,6 @@
 import io from 'socket.io-client'
+import Host from '../../config'
 
-const socket = io('http://:8080')
+const socket = io(Host)
 
 export default socket
